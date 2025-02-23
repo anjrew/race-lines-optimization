@@ -6,7 +6,7 @@ import numpy as np
 import os
 import shapely
 from tkinter.filedialog import askdirectory
-from basic.geometry.raceline.raceline_optimization import RacelineOptimization
+from raceline_optimization import RacelineOptimization
 
 
 class TrackFromBitmap:
