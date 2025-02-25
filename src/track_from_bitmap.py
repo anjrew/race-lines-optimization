@@ -11,11 +11,17 @@ from raceline_optimization import RacelineOptimization
 
 class TrackFromBitmap:
 
-    def __init__(self, track_folder, scale=0.2, dist_to_border=0.35,
+    def __init__(self, track_folder: str, scale=0.2, dist_to_border=0.35,
                  line_thickness=4):
+        track_folder = os.path.normpath(track_folder)
+
+        print("Track folder", track_folder)
+
         track_name = os.path.basename(track_folder)
+        print("Track name", track_name)
         track_scale = json.load(open(os.path.join(folder, "track.json")))["scale"]
         filename = os.path.join(folder, f"{track_name}.png")
+        print("Getting track from bitmap", filename)
         self.bitmap = cv2.imread(filename)
         logging.info(f"Start conversion of bitmap {filename}.")
         self.contours = []
