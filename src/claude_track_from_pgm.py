@@ -93,6 +93,16 @@ def extract_track_coordinates(image_path: str, output_path=None, visualize=True)
             writer = csv.writer(file)
             writer.writerow(['x', 'y'])
             writer.writerows(boundary_coords)
+
+        plt.imsave(output_path / 'distance_transform.png', dist_norm, cmap='hot')
+
+        plt.imsave(output_path / 'centerline.png', cv2.cvtColor(skeleton, cv2.COLOR_GRAY2RGB))
+
+        plt.imsave(output_path / 'binary.png', binary, cmap='gray')
+
+        plt.imsave(output_path / 'track.png', cv2.cvtColor(img, cv2.COLOR_GRAY2RGB))
+
+        plt.imsave(output_path / 'track_with_coords.png', cv2.cvtColor(img, cv2.COLOR_GRAY2RGB))    
     
     # Visualize results
     if visualize:
