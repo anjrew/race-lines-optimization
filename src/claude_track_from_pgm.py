@@ -44,27 +44,32 @@ def extract_track_coordinates(image_path: str, output_path=None, visualize=True)
     # Extract boundary coordinates
     boundary_coords = []
     for point in boundary_points:
-        x, y = point[0] # type: ignore
+        x, y = point[0]  # type: ignore
         boundary_coords.append((x, y))
     
     # Skeletonize to get centerline
-    # Distance transform + local maxima approach
+    # Distance transform + adaptive thresholding
     dist_transform = cv2.distanceTransform(binary, cv2.DIST_L2, 5)
     
     # Normalize for visualization
     dist_norm = cv2.normalize(dist_transform, None, 0, 1.0, cv2.NORM_MINMAX)
     
-    # Threshold to get the skeleton/centerline
-    _, skeleton = cv2.threshold(dist_norm, 0.7, 1.0, cv2.THRESH_BINARY)
+    # Improve skeleton by using an adaptive threshold based on max distance
+    max_dist = np.max(dist_transform[binary > 0])  # Max distance within track
+    factor = 0.5 ## Factor
+    thresh_value = max_dist * factor  # Threshold at half the max distance (adjustable)
+    _, skeleton = cv2.threshold(dist_transform, thresh_value, 255, cv2.THRESH_BINARY)
+    skeleton = skeleton.astype(np.uint8)
     
-    skeleton = (skeleton * 255).astype(np.uint8)
+    # Optional: Thin the skeleton with a single erosion step to refine it
+    kernel = np.ones((3, 3), np.uint8)
+    skeleton = cv2.erode(skeleton, kernel, iterations=1)
     
     # Find centerline points
     centerline_points = np.where(skeleton > 0)
     centerline_coords = [(x, y) for y, x in zip(centerline_points[0], centerline_points[1])]
     
     # Sort centerline points to follow the track
-    # This is a simplified approach - may need improvement for complex tracks
     if len(centerline_coords) > 1:
         sorted_centerline = [centerline_coords[0]]
         remaining = centerline_coords[1:]
@@ -95,53 +100,46 @@ def extract_track_coordinates(image_path: str, output_path=None, visualize=True)
             writer.writerows(boundary_coords)
 
         plt.imsave(output_path / 'distance_transform.png', dist_norm, cmap='hot')
-
         plt.imsave(output_path / 'centerline.png', cv2.cvtColor(skeleton, cv2.COLOR_GRAY2RGB))
-
         plt.imsave(output_path / 'binary.png', binary, cmap='gray')
-
         plt.imsave(output_path / 'track.png', cv2.cvtColor(img, cv2.COLOR_GRAY2RGB))
-
         plt.imsave(output_path / 'track_with_coords.png', cv2.cvtColor(img, cv2.COLOR_GRAY2RGB))    
     
     # Visualize results
     if visualize:
         plt.figure(figsize=(12, 10))
         
-        # Original image
-        plt.subplot(2, 2, 1)
-        plt.imshow(img, cmap='gray')
-        plt.title('Original Track Image')
+        # # Original image
+        # plt.subplot(2, 2, 1)
+        # plt.imshow(img, cmap='gray')
+        # plt.title('Original Track Image')
         
-        # Binary image
-        plt.subplot(2, 2, 2)
-        plt.imshow(binary, cmap='gray')
-        plt.title('Binary Track Image')
+        # # Binary image
+        # plt.subplot(2, 2, 2)
+        # plt.imshow(binary, cmap='gray')
+        # plt.title('Binary Track Image')
         
-        # Distance transform
-        plt.subplot(2, 2, 3)
-        plt.imshow(dist_norm, cmap='hot')
-        plt.title('Distance Transform')
+        # # Distance transform
+        # plt.subplot(2, 2, 3)
+        # plt.imshow(dist_norm, cmap='hot')
+        # plt.title('Distance Transform')
         
         # Result with coordinates
-        plt.subplot(2, 2, 4)
+        # plt.subplot(2, 2, 4)
         plt.imshow(img, cmap='gray')
-        
-        # Plot centerline
         centerline_x = [p[0] for p in centerline_coords]
         centerline_y = [p[1] for p in centerline_coords]
         plt.plot(centerline_x, centerline_y, 'g-', linewidth=2, label='Centerline')
-        
-        # Plot boundary
         boundary_x = [p[0] for p in boundary_coords]
         boundary_y = [p[1] for p in boundary_coords]
         plt.plot(boundary_x, boundary_y, 'b-', linewidth=2, label='Boundary')
-        
         plt.title('Extracted Track Coordinates')
         plt.legend()
         
         plt.tight_layout()
         plt.show()
+        if output_path:
+            plt.savefig(output_path / 'track_with_coords.png')
     
     return centerline_coords, boundary_coords
 
@@ -161,7 +159,6 @@ occupied_thresh: 0.65
 free_thresh: 0.196
 negate: 0
 """
-    
     with open(output_path / f"{Path(pgm_path).stem}.yaml", 'w') as file:
         file.write(yaml_content)
 
