@@ -22,3 +22,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+4. Run the script to extract the track edges from from the PGM file:
+```bash
+python claude_track_from_pgm.py /Users/earyzhe/workspaces/race-lines-optimization/maps/cdc_2024/cdc_2024_edited.pgm
+```

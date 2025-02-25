@@ -1,3 +1,5 @@
-opencv-python
+# opencv-python
 numpy
 Shapely
+opencv-contrib-python
+matplotlib
