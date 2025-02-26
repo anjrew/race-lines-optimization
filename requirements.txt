@@ -3,3 +3,5 @@ numpy
 Shapely
 opencv-contrib-python
 matplotlib
+scipy
+scikit-image
