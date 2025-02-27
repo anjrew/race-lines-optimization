@@ -12,6 +12,8 @@ If your track is a binary image (black and white), ensure the track is clearly v
 
 Select the Paths Tool: Press B or find it in the toolbox (it looks like a pen with a dotted line).
 
+![Paths Tool](../images/path_tool.png)
+
 Set Up the Tool: In the Tool Options (below the toolbox), ensure “Design” mode is selected under “Edit Mode.” This lets you place and adjust points freely.
 
 Trace the Racing Line:
@@ -67,3 +69,31 @@ Smoothing Control: Bezier curves give you hands-on smoothing, akin to the spline
 
 Flexibility: You can tweak the line’s thickness and color, making it stand out on your track image.
 
+## Connect the Start and End Points
+
+Check for Disconnection: Zoom in (Ctrl + mouse wheel) to the start and end points of your racing line. If they don’t meet, the path isn’t closed.
+
+Edit the Path:
+With the Paths Tool active, switch to Edit mode in the Tool Options (or hold Ctrl while clicking).
+
+Click the last point you placed (the end of the path).
+
+Move the cursor to the first point (the start). You’ll see a small square appear next to the cursor when you hover over it—this indicates you can connect.
+
+Click the first point while holding Ctrl (or in Edit mode). This links the last point to the first, closing the path into a loop.
+
+Verify Closure: In the Paths panel, the path icon should update to show a closed shape (a continuous outline rather than a broken line).
+
+## Stroke the Path to Create the Line
+
+![Stroke Path](../images/stroke_path.png)
+
+## Tips
+
+- **Move Nodes**: Move existing nodes by being in "Design" mode and clicking on a node, then dragging it.
+- **Add Nodes**: Add a new node between two existing nodes by clicking the path between them.
+- **Delete Nodes**: Delete a node by being in "Design" mode, clicking the node, and pressing 
+
+### Other resources
+
+ - [How to Move, Add and Delete PATH NODES in GIMP (Anchor Points)](https://www.youtube.com/watch?v=rgf4qdvAmFo)
