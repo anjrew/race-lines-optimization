@@ -10,9 +10,29 @@ from shapely.geometry import Point, Polygon
 class RacelineOptimization:
 
     def __init__(self, center_line, inline, outline):
-        self.center_line = center_line
-        self.inline = inline
-        self.outline = outline
+        # Convert inputs to NumPy arrays if they aren't already
+        self.center_line = np.asarray(center_line)
+        self.inline = np.asarray(inline)
+        self.outline = np.asarray(outline)
+
+        # Assert shapes and properties
+        assert len(self.center_line.shape) == 2 and self.center_line.shape[1] == 2, \
+            f"center_line must be a 2D array with shape (n, 2), got {self.center_line.shape}"
+        assert len(self.inline.shape) == 2 and self.inline.shape[1] == 2, \
+            f"inline must be a 2D array with shape (n, 2), got {self.inline.shape}"
+        assert len(self.outline.shape) == 2 and self.outline.shape[1] == 2, \
+            f"outline must be a 2D array with shape (n, 2), got {self.outline.shape}"
+        
+        # Ensure minimum number of points for polygons
+        assert self.inline.shape[0] >= 3, \
+            f"inline must have at least 3 points to form a polygon, got {self.inline.shape[0]}"
+        assert self.outline.shape[0] >= 3, \
+            f"outline must have at least 3 points to form a polygon, got {self.outline.shape[0]}"
+        
+        # Optional: Log a warning if center_line is too short, but don't fail
+        if self.center_line.shape[0] < 3:
+            logging.warning(f"center_line has {self.center_line.shape[0]} points; fewer than 3 may lead to suboptimal results.")
+
 
     def get_optimized_race_line(self, iterations=100):
         logging.info(f"Optimizing race line with {iterations} on {self.center_line.shape[0]} points.")

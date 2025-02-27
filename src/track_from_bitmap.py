@@ -9,7 +9,7 @@ import numpy as np
 import os
 import shapely
 from tkinter.filedialog import askdirectory
-from raceline_optimization import RacelineOptimization
+from notebooks.raceline_optimization import RacelineOptimization
 
 
 class TrackFromBitmap:
