@@ -16,7 +16,8 @@ Select the Paths Tool: Press B or find it in the toolbox (it looks like a pen wi
 
 Set Up the Tool: In the Tool Options (below the toolbox), ensure “Design” mode is selected under “Edit Mode.” This lets you place and adjust points freely.
 
-Trace the Racing Line:
+### Trace the Racing Line:
+
 Click to place the first point at the start of where you want the racing line (e.g., entry to a corner).
 
 Click again at key points along the ideal path (e.g., apex of a turn, exit point). Don’t worry about smoothness yet—just approximate the line.
@@ -27,7 +28,8 @@ Continue placing points around the track, connecting them logically.
 
 ## Step 3: Smooth the Path
 
-Refine the Curve:
+### Refine the Curve:
+
 After placing points, switch to “Edit” mode in the Tool Options (or hold Shift while clicking points).
 
 Click and drag existing points to adjust their position.

@@ -173,3 +173,5 @@ cython_debug/
 # Temp files
 src/tmp
 output
+
+*.DS_Store
