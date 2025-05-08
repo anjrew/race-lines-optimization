@@ -175,3 +175,5 @@ src/tmp
 output
 
 *.DS_Store
+
+tmp/

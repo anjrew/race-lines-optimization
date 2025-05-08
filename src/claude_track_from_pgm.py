@@ -8,7 +8,7 @@ import argparse
 from pathlib import Path
 import csv
 
-def extract_track_coordinates(image_path: str, output_path=None, visualize=True):
+def extract_track_coordinates(image_path: str, invert: bool, output_path=None, visualize=True):
     """
     Extract track coordinates from a bitmap image (PGM or PNG).
     
@@ -31,7 +31,7 @@ def extract_track_coordinates(image_path: str, output_path=None, visualize=True)
     _, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
     
     # Invert if the track is white (assuming track is darker than background)
-    if np.mean(binary) > 127:
+    if invert:
         binary = 255 - binary
     
     # Find contours - for boundary extraction
@@ -146,7 +146,7 @@ def extract_track_coordinates(image_path: str, output_path=None, visualize=True)
     
     return centerline_coords, boundary_coords
 
-def create_ros_map_yaml(pgm_path, output_path, resolution=0.05):
+def create_ros_map_yaml(pgm_path:str, output_path:str, resolution:float) -> None:
     """
     Create a ROS map YAML file for the PGM image.
     
@@ -165,7 +165,7 @@ negate: 0
     with open(output_path / f"{Path(pgm_path).stem}.yaml", 'w') as file:
         file.write(yaml_content)
 
-def convert_to_ros_coordinates(coords, image_height, resolution=0.05):
+def convert_to_ros_coordinates(coords, image_height: float, resolution=float) -> list:
     """
     Convert image coordinates to ROS coordinates.
     
@@ -183,8 +183,9 @@ def main():
     parser = argparse.ArgumentParser(description='Extract track coordinates from bitmap')
     parser.add_argument('image_path', help='Path to the track image (PGM or PNG)')
     parser.add_argument('--output', '-o', help='Directory to save output files', default='./tmp')
-    parser.add_argument('--resolution', '-r', type=float, default=0.05, help='Map resolution in meters/pixel')
+    parser.add_argument('--resolution', '-r', type=float, help='Map resolution in meters/pixel')
     parser.add_argument('--no-viz', action='store_true', help='Disable visualization')
+    parser.add_argument('--invert', action='store_true', default=False, help='Force inversion of the binary image')
     
     args = parser.parse_args()
     
@@ -193,10 +194,11 @@ def main():
     output_path.mkdir(exist_ok=True)
     
     print(f"Processing {image_path}...")
-    
+
     # Extract track coordinates
     centerline, boundary = extract_track_coordinates(
         image_path, 
+        args.invert,
         output_path, 
         visualize=not args.no_viz
     )

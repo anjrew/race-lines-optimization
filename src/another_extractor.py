@@ -5,6 +5,8 @@ import cv2
 import numpy as np
 from skimage.morphology import skeletonize
 import matplotlib.pyplot as plt
+import argparse
+
 
 def extract_track_coordinates(image_path, resolution=1.0, origin=(0, 0)):
     """
@@ -22,9 +24,11 @@ def extract_track_coordinates(image_path, resolution=1.0, origin=(0, 0)):
     """
     # Read the image in grayscale
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    print(f"Image shape: {image.shape}")
     
     # Ensure the image is binary (white track, black background)
     _, binary = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+    print(f"Binary image shape: {binary.shape}")
     
     # Invert if necessary (white should be 255, black 0)
     if np.mean(binary) < 128:  # If mostly dark, invert
@@ -33,8 +37,12 @@ def extract_track_coordinates(image_path, resolution=1.0, origin=(0, 0)):
     # Find contours (boundaries) of the white track
     contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
+    print(f"Number of contours found: {len(contours)}")
+    
     if not contours:
         raise ValueError("No contours found in the image. Check the image format and threshold.")
+    
+    print("Contours found, processing...")
     
     # Assume the largest contour is the track boundary
     track_contour = max(contours, key=cv2.contourArea)
@@ -63,6 +71,7 @@ def extract_track_coordinates(image_path, resolution=1.0, origin=(0, 0)):
     # Use the largest skeleton contour as the centerline
     centerline_contour = max(skeleton_contours, key=cv2.contourArea)
     centerline_pixels = centerline_contour.squeeze().tolist()
+    print(f"Centerline contour points: {len(centerline_pixels)}")
     
     # For inner boundary, erode the track slightly to shrink it inward
     kernel = np.ones((3, 3), np.uint8)
@@ -74,9 +83,11 @@ def extract_track_coordinates(image_path, resolution=1.0, origin=(0, 0)):
     
     inner_contour = max(eroded_contours, key=cv2.contourArea)
     inner_coords_pixels = inner_contour.squeeze().tolist()
+    print(f"Inner boundary contour points: {len(inner_coords_pixels)}")
     
     # Convert pixel coordinates to meters using resolution and origin
     def pixels_to_meters(pixel_coords, resolution, origin):
+        print(f"Converting pixel coordinates to meters with resolution: {resolution} and origin: {origin}")
         meter_coords = []
         for x, y in pixel_coords:
             # ROS convention: x increases right, y increases down in images, but up in ROS maps
@@ -90,6 +101,8 @@ def extract_track_coordinates(image_path, resolution=1.0, origin=(0, 0)):
     inner_coords = pixels_to_meters(inner_coords_pixels, resolution, origin)
     outer_coords = pixels_to_meters(outer_coords_pixels, resolution, origin)
     centerline_coords = pixels_to_meters(centerline_pixels, resolution, origin)
+    
+    print(f"Inner boundary coordinates (in meters): {inner_coords}")
     
     # Optional: Visualize the results
     plt.figure(figsize=(10, 10))
@@ -113,11 +126,18 @@ def extract_track_coordinates(image_path, resolution=1.0, origin=(0, 0)):
 # Example usage
 if __name__ == "__main__":
     try:
+        parser = argparse.ArgumentParser(description='Extract track coordinates from bitmap')
+        parser.add_argument('image_path', help='Path to the track image (PGM or PNG)')
+        parser.add_argument('--resolution', '-r', type=float, help='Map resolution in meters/pixel')
+
+        args = parser.parse_args()
+        
         # Specify your image path, resolution (meters/pixel), and origin (meters)
-        image_path = "/Users/earyzhe/workspaces/race-lines-optimization/maps/cdc_2024/cdc_2024_edited.png"  # Replace with your image path
-        resolution = 0.05  # Example: 0.05 meters per pixel
+        image_path = args.image_path
+        resolution = args.resolution
         origin = (0, 0)  # Example: origin at (0, 0) meters
         
+        print(f"Starting to process image: {image_path}")
         inner, outer, centerline = extract_track_coordinates(image_path, resolution, origin)
         
         print("Inner Boundary Coordinates (meters):", inner)
