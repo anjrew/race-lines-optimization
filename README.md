@@ -2,6 +2,10 @@
 
 A repo focused solely on race-line optimization  
 
+
+
+
+
 ## Setup
 
 1. Create the virtual environment by running:
@@ -22,7 +26,9 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. Run the script to extract the track edges from from the PGM file:
-```bash
-python src/claude_track_from_pgm.py ./maps/cdc_2024/cdc_2024_edited.pgm
-```
+
+# Make track
+
+1. Run the `notebooks/track_coordinates.ipynb` notebook to produce the output files
+
+2. Create a racing line [docs/creating_a_racing_line_in_gimp.md](docs/creating_a_racing_line_in_gimp.md)
