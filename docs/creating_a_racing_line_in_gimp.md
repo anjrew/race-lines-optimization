@@ -8,6 +8,9 @@ Open GIMP and go to File > Open, then select your track image.
 
 If your track is a binary image (black and white), ensure the track is clearly visible (e.g., white track on black background). You can adjust contrast via Colors > Brightness-Contrast if needed.
 
+# Convert to RGB:
+The simplest solution is to convert the image to RGB color mode. Go to Image > Mode > RGB. 
+
 ## Step 2: Use the Paths Tool to Draw the Racing Line
 
 Select the Paths Tool: Press B or find it in the toolbox (it looks like a pen with a dotted line).
