@@ -169,3 +169,11 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Temp files
+src/tmp
+output
+
+*.DS_Store
+
+tmp/
